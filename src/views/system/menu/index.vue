@@ -133,7 +133,7 @@
 
                         <el-table-column label="路由" align="center">
                             <template slot-scope="scope">
-                                <span>{{ scope.row.router || '父路由' }}</span>
+                                <span>{{ scope.row.router }}</span>
                             </template>
                         </el-table-column>
                     </el-table>
@@ -198,17 +198,13 @@
 
                             <el-col :span="12">
                                 <el-form-item label="访问路径" prop="router">
-                                    <el-input v-if="forms.menu.parent_ids.length < 1" v-model="forms.menu.router" style="width: 100%;" placeholder="父路由无需配置" disabled />
-
-                                    <el-input v-else v-model="forms.menu.router" style="width: 100%;" placeholder="请输入访问路径" />
+                                    <el-input v-model="forms.menu.router" style="width: 100%;" placeholder="请输入访问路径" />
                                 </el-form-item>
                             </el-col>
 
                             <el-col :span="12">
                                 <el-form-item label="组件路径" prop="component">
-                                    <el-input v-if="forms.menu.parent_ids.length < 1" v-model="forms.menu.component" style="width: 100%;" placeholder="父路由无需配置" disabled />
-
-                                    <el-select v-else v-model="forms.menu.component" filterable default-first-option placeholder="请选择路由组件" style="width: 100%;">
+                                    <el-select v-model="forms.menu.component" clearable filterable default-first-option placeholder="请选择路由组件" style="width: 100%;">
                                         <el-option
                                             v-for="key in Object.keys($views)"
                                             :key="key"
@@ -331,10 +327,16 @@ export default {
                             { required: true, trigger: 'blur', message: '请输入菜单名称' }
                         ],
                         icon: [
-                            { required: true, trigger: 'blur', message: '请选择菜单图表' }
+                            { required: true, trigger: 'blur', message: '请选择菜单图标' }
                         ],
                         remark: [
                             { required: true, trigger: 'blur', message: '请输入备注' }
+                        ],
+                        router: [
+                            { required: true, trigger: 'blur', message: '请输入访问路径' }
+                        ],
+                        component: [
+                            { required: true, trigger: 'change', message: '请选择组件路径' }
                         ]
                     }
                 }
@@ -434,16 +436,6 @@ export default {
             this.$refs[this.refs.menu.form].validate(valid => {
                 if (!valid) {
                     return this.$message({ message: '表单填写不完整，请确认', type: 'error' })
-                }
-
-                if (this.forms.menu.parent_ids.length > 0) {
-                    if (this.forms.menu.router === '') {
-                        return this.$message({ message: '表单填写不完整，子路由 <访问路径> 不可为空', type: 'error' })
-                    }
-
-                    if (this.forms.menu.component === '') {
-                        return this.$message({ message: '表单填写不完整，子路由 <组件路径> 不可为空', type: 'error' })
-                    }
                 }
 
                 ok = true

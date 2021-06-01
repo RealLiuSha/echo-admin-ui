@@ -86,37 +86,45 @@ const actions = {
             return config.views['emtpy/index']
         }
 
-        // eslint-disable-next-line no-async-promise-executor
-        return new Promise(async resolve => {
-            let routes = config.menus.map(menu => {
-                if (menu.parent_id === '' && menu.children && menu.children.length > 0) {
-                    return {
-                        path: '',
-                        name: menu.name,
-                        hidden: menu.hidden === 1,
-                        component: Layout,
-                        meta: { title: menu.name, icon: menu.icon },
-                        children: menu.children.map(children => {
-                            return {
-                                name: children.name,
-                                path: children.router,
-                                hidden: children.hidden === 1,
-                                component: getView(children.component),
-                                meta: { title: children.name, icon: children.icon }
-                            }
-                        })
-                    }
+        const getChildrenRoutes = children => {
+            let routes = []
+            if (!Array.isArray(children)) { return routes }
+
+            for (let item of children) {
+                let route = {
+                    name: item.name,
+                    path: item.router,
+                    hidden: item.hidden === 1,
+                    component: getView(item.component),
+                    meta: { title: item.name, icon: item.icon }
                 }
 
-                return {
+                let children = getChildrenRoutes(item.children)
+                if (children.length > 0) {
+                    route.children = children
+                }
+
+                routes.push(route)
+            }
+
+            return routes
+        }
+
+        // eslint-disable-next-line no-async-promise-executor
+        return new Promise(async resolve => {
+            let routes = []
+            for (let menu of config.menus) {
+                let route = {
                     path: `/parent-${menu.id}`,
                     name: menu.name,
                     hidden: menu.hidden === 1,
                     component: Layout,
                     meta: { title: menu.name, icon: menu.icon },
-                    children: []
+                    children: getChildrenRoutes(menu.children)
                 }
-            })
+
+                routes.push(route)
+            }
 
             routes.push(...config.localRoutes || [])
 
