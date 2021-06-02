@@ -45,7 +45,7 @@
                         <el-radio v-model="user.params.status" :label="1" border>
                             正常
                         </el-radio>
-                        <el-radio v-model="user.params.status" :label="2" border>
+                        <el-radio v-model="user.params.status" :label="-1" border>
                             禁用
                         </el-radio>
                     </div>
@@ -221,7 +221,7 @@
                             <el-radio v-model="forms.user.status" :label="1" border>
                                 正常
                             </el-radio>
-                            <el-radio v-model="forms.user.status" :label="2" border>
+                            <el-radio v-model="forms.user.status" :label="-1" border>
                                 禁用
                             </el-radio>
                         </el-form-item>
