@@ -61,6 +61,18 @@ function flatAsyncRoutes(routes, breadcrumb, baseUrl = '') {
     return res
 }
 
+function getChildrenPaths(children) {
+    let paths = []
+    if (!Array.isArray(children)) { return paths }
+
+    for (let item of children) {
+        paths.push(item.path)
+        paths.push(...getChildrenPaths(item.children))
+    }
+
+    return paths
+}
+
 const state = {
     isGenerate: false,
     routes: [],
@@ -71,6 +83,17 @@ const state = {
 const getters = {
     sidebarRoutes: state => {
         return state.routes.length > 0 ? state.routes[state.headerActived].children : []
+    },
+    routePaths: state => {
+        let paths = []
+        if (state.routes.length < 1) { return paths }
+
+        for (let route of state.routes) {
+            paths.push(route.path)
+            paths.push(...getChildrenPaths(route.children))
+        }
+
+        return paths
     }
 }
 

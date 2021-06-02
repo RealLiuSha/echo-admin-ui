@@ -26,7 +26,7 @@ const constantRoutes = [
 
 const localRoutes = [
     {
-        path: '',
+        path: '/static',
         name: 'static',
         hidden: false,
         meta: {
@@ -59,7 +59,7 @@ const localRoutes = [
         ]
     },
     {
-        path: '',
+        path: '/other',
         name: 'other',
         hidden: false,
         meta: {title: '外链', icon: 'sidebar-other'},
@@ -123,11 +123,31 @@ VueRouter.prototype.refresh = async function refresh(currentPath) {
 
 router.beforeEach(async(to, from, next) => {
     store.state.settings.enableProgress && NProgress.start()
+
     // 已经登录，但还没根据权限动态挂载路由
     if (store.getters['user/isLogin'] && !store.state.menu.isGenerate) {
         await router.refresh(to.path)
 
-        next({ ...to, replace: true })
+        if (!store.getters['menu/routePaths'].includes(to.path)) {
+            quitLoop:
+            for (const route of store.state.menu.routes) {
+                const children = route.children || []
+                if (children.length < 1) {
+                    continue
+                }
+
+                for (const citem of children) {
+                    if (/^(https?:|mailto:|tel:)/.test(citem.path)) {
+                        continue
+                    }
+
+                    next({ ...citem, replace: true })
+                    break quitLoop
+                }
+            }
+        } else {
+            next({ ...to, replace: true })
+        }
     }
 
     if (store.state.menu.isGenerate) {

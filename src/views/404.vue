@@ -32,7 +32,16 @@ export default {
     },
     methods: {
         goBack() {
-            this.$router.push('/')
+            for (const route of this.$store.state.menu.routes) {
+                const children = route.children || []
+                if (children.length < 1) {
+                    continue
+                }
+
+                return this.$router.push({ path: children[0].path })
+            }
+
+            this.$router.push({ path: '/' })
         }
     }
 }
@@ -63,3 +72,4 @@ export default {
     }
 }
 </style>
+
