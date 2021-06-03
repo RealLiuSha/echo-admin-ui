@@ -1,5 +1,6 @@
 import { deepClone } from '@/utils'
 import Layout from '@/layout'
+import EmptyLayout from '@/layout/empty'
 
 // 将多层嵌套路由处理成平级
 function flatAsyncRoutes(routes, breadcrumb, baseUrl = '') {
@@ -124,6 +125,9 @@ const actions = {
 
                 let children = getChildrenRoutes(item.children)
                 if (children.length > 0) {
+                    route.component = EmptyLayout
+                    route.redirect = children[0].path
+
                     route.children = children
                 }
 
