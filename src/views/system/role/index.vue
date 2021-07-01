@@ -281,20 +281,30 @@ export default {
     },
     computed: {
         menuTreeData() {
+            const getChildrenMenuTrees = children => {
+                let menuTrees = []
+                if (!Array.isArray(children)) { return menuTrees }
+
+                for (let item of children) {
+                    let menuTree = { label: item.name, value: item.id }
+
+                    let children = getChildrenMenuTrees(item.children)
+                    if (children.length > 0) {
+                        menuTree.children = children
+                    }
+
+                    menuTrees.push(menuTree)
+                }
+
+                return menuTrees
+            }
+
             const data = this.menutree.items.map(item => {
-                const m = {
+                return {
                     label: item.name,
                     value: item.id,
-                    children: []
+                    children: getChildrenMenuTrees(item.children)
                 }
-
-                if (item.children && item.children.length > 0) {
-                    item.children.forEach(c => {
-                        m.children.push({ label: c.name, value: c.id })
-                    })
-                }
-
-                return m
             })
 
             return data
